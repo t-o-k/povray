@@ -810,13 +810,15 @@ void Compose_Transforms (TRANSFORM *Original_Transform, const TRANSFORM *Additio
 *
 * CHANGES
 *
-*   -
+*   Optimized calculations
+*   Before: 27 multiplications and 18 additions/subtractions
+*   After: 24 multiplications and 10 additions/subtractions
 *
 ******************************************************************************/
 
 void Compute_Axis_Rotation_Transform (TRANSFORM *transform, const Vector3d& AxisVect, DBL angle)
 {
-    DBL cosx, sinx;
+    DBL cosx, sinx, omc;
     Vector3d V1;
 
     V1 = AxisVect.normalized();
@@ -825,18 +827,19 @@ void Compute_Axis_Rotation_Transform (TRANSFORM *transform, const Vector3d& Axis
 
     cosx = cos(angle);
     sinx = sin(angle);
+    omc = 1.0 - cosx;
 
-    transform->matrix[0][0] = V1[X] * V1[X] + cosx * (1.0 - V1[X] * V1[X]);
-    transform->matrix[0][1] = V1[X] * V1[Y] * (1.0 - cosx) + V1[Z] * sinx;
-    transform->matrix[0][2] = V1[X] * V1[Z] * (1.0 - cosx) - V1[Y] * sinx;
+    transform->matrix[0][0] = V1[X] * V1[X] * omc + cosx;
+    transform->matrix[0][1] = V1[X] * V1[Y] * omc + sinx * V1[Z];
+    transform->matrix[0][2] = V1[X] * V1[Z] * omc - sinx * V1[Y];
 
-    transform->matrix[1][0] = V1[X] * V1[Y] * (1.0 - cosx) - V1[Z] * sinx;
-    transform->matrix[1][1] = V1[Y] * V1[Y] + cosx * (1.0 - V1[Y] * V1[Y]);
-    transform->matrix[1][2] = V1[Y] * V1[Z] * (1.0 - cosx) + V1[X] * sinx;
+    transform->matrix[1][0] = V1[Y] * V1[X] * omc - sinx * V1[Z];
+    transform->matrix[1][1] = V1[Y] * V1[Y] * omc + cosx;
+    transform->matrix[1][2] = V1[Y] * V1[Z] * omc + sinx * V1[X];
 
-    transform->matrix[2][0] = V1[X] * V1[Z] * (1.0 - cosx) + V1[Y] * sinx;
-    transform->matrix[2][1] = V1[Y] * V1[Z] * (1.0 - cosx) - V1[X] * sinx;
-    transform->matrix[2][2] = V1[Z] * V1[Z] + cosx * (1.0 - V1[Z] * V1[Z]);
+    transform->matrix[2][0] = V1[Z] * V1[X] * omc + sinx * V1[Y];
+    transform->matrix[2][1] = V1[Z] * V1[Y] * omc - sinx * V1[X];
+    transform->matrix[2][2] = V1[Z] * V1[Z] * omc + cosx;
 
     MTranspose(transform->inverse, transform->matrix);
 }
