@@ -810,9 +810,8 @@ void Compose_Transforms (TRANSFORM *Original_Transform, const TRANSFORM *Additio
 *
 * CHANGES
 *
-*   Optimized calculations
-*   Before: 27 multiplications and 18 additions/subtractions
-*   After: 24 multiplications and 10 additions/subtractions
+*   Nov 2017 Tor Olav Kristensen - Optimized calculations
+*     https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
 *
 ******************************************************************************/
 
