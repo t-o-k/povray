@@ -140,7 +140,7 @@ void MZero (MATRIX result)
 *
 * CHANGES
 *
-*   -
+*   Nov 2017 Tor Olav Kristensen - Optimized code
 *
 ******************************************************************************/
 
@@ -148,19 +148,17 @@ void MIdentity (MATRIX result)
 {
     register int i, j;
 
+    for (i = 1; i < 4; i++)
+    {
+        for (j = 0; j < i; j++)
+        {
+            result[i][j] = 0.0;
+            result[j][i] = 0.0;
+        }
+    }
     for (i = 0; i < 4; i++)
     {
-        for (j = 0; j < 4; j++)
-        {
-            if (i == j)
-            {
-                result[i][j] = 1.0;
-            }
-            else
-            {
-                result[i][j] = 0.0;
-            }
-        }
+        result[i][i] = 1.0;
     }
 }
 
